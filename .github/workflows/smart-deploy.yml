@@ -1,0 +1,40 @@
+name: Smart Deployment Pipeline
+
+on:
+  push:
+    branches:
+      - retail-analytics_new_dev
+      - main
+  workflow_dispatch:
+
+env:
+  DATABRICKS_HOST: ${{ github.ref == 'refs/heads/main' && secrets.PROD_DATABRICKS_HOST || secrets.DEV_DATABRICKS_HOST }}
+  DATABRICKS_TOKEN: ${{ github.ref == 'refs/heads/main' && secrets.PROD_DATABRICKS_TOKEN || secrets.DEV_DATABRICKS_TOKEN }}
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Setup Databricks CLI
+        uses: databricks/setup-cli@main
+      
+      - name: Deploy with DABs
+        run: |
+          TARGET=${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
+          databricks bundle deploy --target $TARGET
+      
+      - name: Summary
+        run: |
+          echo "✅ Deployed to: ${{ github.ref == 'refs/heads/main' && 'PROD' || 'DEV' }}"
+          echo "📦 What was deployed:"
+          echo "  - UC Tables (via schema definitions)"
+          echo "  - Delta Live Tables Pipelines"
+          echo "  - Scheduled Jobs"
+          echo "  - Notebooks"
+          echo ""
+          echo "⚠️  Manual step (one-time):"
+          echo "  Create Genie Space using PROD_SPACE_CREATION_CHECKLIST.md"
