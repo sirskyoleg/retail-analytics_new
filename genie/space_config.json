@@ -1,0 +1,57 @@
+{
+  "space": {
+    "display_name": "Retail Analytics Starter Space",
+    "description": "Ласкаво просимо до Genie для аналізу даних роздрібної торгівлі. Тут ви можете задавати питання природною мовою українською або англійською, щоб отримати інсайти про клієнтів, виручку та обслуговування.",
+    "run_as_type": "VIEWER"
+  },
+  "tables": [
+    "retail_ai3.gold.customer_service_summary",
+    "retail_ai3.gold.product_wise_revenue",
+    "retail_ai3.gold.top_customers"
+  ],
+  "starter_questions": [
+    {
+      "question": "Які найбільш прибуткові продукти?"
+    },
+    {
+      "question": "Яка середня оцінка обслуговування клієнтів?"
+    },
+    {
+      "question": "Які топ-5 клієнтів за виручкою?"
+    }
+  ],
+  "benchmark_questions": [
+    {
+      "question": "Який продукт має найменшу виручку?",
+      "expected_sql": "SELECT product_name, revenue FROM retail_ai3.gold.product_wise_revenue ORDER BY revenue ASC LIMIT 1"
+    },
+    {
+      "question": "Покажи всі категорії проблем обслуговування клієнтів",
+      "expected_sql": "SELECT issue_category, total_records FROM retail_ai3.gold.customer_service_summary ORDER BY total_records DESC"
+    },
+    {
+      "question": "What is the most common customer service issue category?",
+      "expected_sql": "SELECT issue_category, total_records FROM retail_ai3.gold.customer_service_summary ORDER BY total_records DESC LIMIT 1"
+    },
+    {
+      "question": "Скільки всього звернень до служби підтримки клієнтів?",
+      "expected_sql": "SELECT SUM(total_records) as total_requests FROM retail_ai3.gold.customer_service_summary"
+    },
+    {
+      "question": "Show me the most profitable products",
+      "expected_sql": "SELECT product_name, revenue FROM retail_ai3.gold.product_wise_revenue ORDER BY revenue DESC"
+    },
+    {
+      "question": "Яка загальна виручка від усіх продуктів?",
+      "expected_sql": "SELECT SUM(revenue) as total_revenue FROM retail_ai3.gold.product_wise_revenue"
+    },
+    {
+      "question": "Who are the top 3 customers by spending?",
+      "expected_sql": "SELECT name, total_spent FROM retail_ai3.gold.top_customers ORDER BY total_spent DESC LIMIT 3"
+    },
+    {
+      "question": "Які топ-5 клієнтів за загальною витраченою сумою?",
+      "expected_sql": "SELECT name, total_spent FROM retail_ai3.gold.top_customers ORDER BY total_spent DESC LIMIT 5"
+    }
+  ]
+}

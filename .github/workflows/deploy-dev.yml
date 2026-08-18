@@ -1,0 +1,40 @@
+name: Deploy to Development
+
+on:
+  push:
+    branches:
+      - retail-analytics_new_dev
+  workflow_dispatch:
+
+jobs:
+  deploy-dev:
+    runs-on: ubuntu-latest
+    environment: development
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: Install dependencies
+        run: |
+          pip install requests databricks-cli
+      
+      - name: Deploy Genie Space to Development
+        env:
+          DATABRICKS_HOST: ${{ secrets.DEV_DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DEV_DATABRICKS_TOKEN }}
+          CATALOG_NAME: retail_ai3_dev
+        run: |
+          echo "Deploying Genie Space to development..."
+          python3 scripts/deploy_genie_space.py
+      
+      - name: Deployment Summary
+        run: |
+          echo "✅ Successfully deployed to development!"
+          echo "Workspace: ${{ secrets.DEV_DATABRICKS_HOST }}"
+          echo "Catalog: retail_ai3_dev"

@@ -1,0 +1,40 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy-prod:
+    runs-on: ubuntu-latest
+    environment: production
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: Install dependencies
+        run: |
+          pip install requests databricks-cli
+      
+      - name: Deploy Genie Space to Production
+        env:
+          DATABRICKS_HOST: ${{ secrets.PROD_DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.PROD_DATABRICKS_TOKEN }}
+          CATALOG_NAME: retail_ai3
+        run: |
+          echo "Deploying Genie Space to production..."
+          python3 scripts/deploy_genie_space.py
+      
+      - name: Deployment Summary
+        run: |
+          echo "✅ Successfully deployed to production!"
+          echo "Workspace: ${{ secrets.PROD_DATABRICKS_HOST }}"
+          echo "Catalog: retail_ai3"

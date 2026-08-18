@@ -1,0 +1,32 @@
+bundle:
+  name: retail_analytics_new
+
+include:
+  - resources/*.yml
+
+variables:
+  catalog_name:
+    description: "Unity Catalog name"
+    default: retail_ai3
+
+targets:
+  # Development environment
+  dev:
+    mode: development
+    default: true
+    workspace:
+      host: https://dbc-9e376111-e24d.cloud.databricks.com
+      root_path: ~/.bundle/${bundle.name}/${bundle.target}
+    
+    variables:
+      catalog_name: retail_ai3_dev
+
+  # Production environment
+  prod:
+    mode: production
+    workspace:
+      host: https://dbc-91a4ccf2-831f.cloud.databricks.com
+      root_path: /Workspace/.bundles/prod/${bundle.name}
+    
+    variables:
+      catalog_name: retail_ai3
