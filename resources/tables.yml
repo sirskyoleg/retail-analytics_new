@@ -1,0 +1,27 @@
+resources:
+  jobs:
+    create_uc_tables:
+      name: Create UC Tables - ${bundle.target}
+      tasks:
+      - task_key: create_customer_service_summary
+        sql_task:
+          warehouse_id: ${var.warehouse_id}
+          file:
+            path: ../src/schemas/customer_service_summary.sql
+        timeout_seconds: 300
+      - task_key: create_product_wise_revenue
+        sql_task:
+          warehouse_id: ${var.warehouse_id}
+          file:
+            path: ../src/schemas/product_wise_revenue.sql
+        depends_on:
+        - task_key: create_customer_service_summary
+        timeout_seconds: 300
+      - task_key: create_top_customers
+        sql_task:
+          warehouse_id: ${var.warehouse_id}
+          file:
+            path: ../src/schemas/top_customers.sql
+        depends_on:
+        - task_key: create_product_wise_revenue
+        timeout_seconds: 300
