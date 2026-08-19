@@ -36,11 +36,11 @@ jobs:
           DATABRICKS_HOST: ${{ secrets.DEV_DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DEV_DATABRICKS_TOKEN }}
           CATALOG_NAME: retail_ai3_dev
+        run: |
+          echo "Deploying Genie Space to development 2222..."  
           echo "Host: ${DATABRICKS_HOST}"
           echo "Token exists: ${DATABRICKS_TOKEN:+YES}"
           echo "Token length: ${#DATABRICKS_TOKEN}"
-        run: |
-          echo "Deploying Genie Space to development 2222..."  
           python3 scripts/deploy_genie_space.py 
       - name: Deployment Summary
         run: |
