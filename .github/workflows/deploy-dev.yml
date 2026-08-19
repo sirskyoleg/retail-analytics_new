@@ -46,7 +46,7 @@ jobs:
           -H "Authorization: Bearer ${DATABRICKS_TOKEN}" \
           "${DATABRICKS_HOST}/api/2.0/current-user"
 
-            cat response.json
+          cat response.json
           python3 scripts/deploy_genie_space.py
       
       - name: Deployment Summary
