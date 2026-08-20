@@ -26,6 +26,7 @@ jobs:
         run: |
           TARGET=${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
           databricks bundle deploy --target $TARGET
+          databricks bundle run my_job --target $TARGET
       
       - name: Summary
         run: |
