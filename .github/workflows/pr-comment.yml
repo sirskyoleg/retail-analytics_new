@@ -35,18 +35,6 @@ jobs:
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: pr.number,
-                body: `## ❌ Deployment Validation Failed
-
-**This PR CANNOT be merged** because validation failed.
-
-**Action Run:** ${run_url}
-
-### Next Steps:
-1. Check the error logs in the failed action
-2. Fix the issues in your feature branch  
-3. Commit and push the fixes
-4. Validation will run automatically again
-
-⚠️ **Do not merge until all checks pass!**`
+                body: `## ❌ Deployment Validation Failed\n\n**This PR CANNOT be merged** because validation failed.\n\n**Action Run:** ${run_url}\n\n### Next Steps:\n1. Check the error logs in the failed action\n2. Fix the issues in your feature branch\n3. Commit and push the fixes\n4. Validation will run automatically again\n\n⚠️ **Do not merge until all checks pass!**`
               });
             }
