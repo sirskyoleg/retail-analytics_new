@@ -1,7 +1,7 @@
 -- Product Revenue Table
 -- Revenue aggregated by product
 
-CREATE TABLE IF NOT EXISTS ${catalog}.${schema}.product_wise_revenue (
+CREATE TABLE IF NOT EXISTS IDENTIFIER(:catalog || '.' || :schema || '.product_wise_revenue') (
   product_name STRING COMMENT 'Name of the product',
   revenue DOUBLE COMMENT 'Total revenue for this product'
 )
