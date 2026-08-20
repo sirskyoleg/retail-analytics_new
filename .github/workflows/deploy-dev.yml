@@ -51,28 +51,6 @@ jobs:
           cat response.json
 
       # ==========================================================
-      # DEPLOY GENIE SPACE
-      # ==========================================================
-
-      - name: Deploy Genie Space to Development
-        env:
-          DATABRICKS_HOST: ${{ secrets.DEV_DATABRICKS_HOST }}
-          DATABRICKS_TOKEN: ${{ secrets.DEV_DATABRICKS_TOKEN }}
-          WAREHOUSE_ID: ${{ secrets.DEV_WAREHOUSE_ID || '5b8e2cea7c9d6bbf' }}
-          CATALOG_NAME: retail_ai3_dev
-        run: |
-          echo "========================================"
-          echo "Deploying Genie Space to development"
-          echo "========================================"
-
-          echo "Host: ${DATABRICKS_HOST}"
-          echo "Token exists: ${DATABRICKS_TOKEN:+YES}"
-          echo "Token length: ${#DATABRICKS_TOKEN}"
-          echo "Catalog: ${CATALOG_NAME}"
-
-          python3 scripts/deploy_genie_space.py
-
-      # ==========================================================
       # SUMMARY
       # ==========================================================
 
@@ -84,3 +62,6 @@ jobs:
 
           echo "Workspace: ${{ secrets.DEV_DATABRICKS_HOST }}"
           echo "Catalog: retail_ai3_dev"
+          echo ""
+          echo "Note: Genie Space creation is not supported in Free edition."
+          echo "Create the space manually in the Databricks UI if needed."
