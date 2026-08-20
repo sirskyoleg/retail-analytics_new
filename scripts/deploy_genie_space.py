@@ -80,11 +80,16 @@ class GenieSpaceDeployer:
         if not self.warehouse_id:
             raise ValueError("WAREHOUSE_ID is required to create a Genie Space.")
 
-        payload = {
+        genie_space = {
             "display_name": space_config['display_name'],
             "description": space_config['description'],
             "table_identifiers": tables,
             "warehouse_id": self.warehouse_id
+        }
+
+        payload = {
+            **genie_space,
+            "serialized_space": json.dumps(genie_space)
         }
         
         print(f"Creating Genie Space: {space_config['display_name']}")

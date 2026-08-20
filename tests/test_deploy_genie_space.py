@@ -52,3 +52,5 @@ def test_create_space_payload_includes_warehouse_id(monkeypatch):
 
     assert result == "abc123"
     assert captured["json"]["warehouse_id"] == "warehouse-123"
+    assert "serialized_space" in captured["json"]
+    assert "warehouse-123" in captured["json"]["serialized_space"]
