@@ -1,0 +1,44 @@
+name: PR Validation
+
+on:
+  pull_request:
+    branches:
+      - retail-analytics_new_dev
+      - main
+    types: [opened, synchronize, reopened]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      
+      - name: Setup Databricks CLI
+        uses: databricks/setup-cli@main
+      
+      - name: Validate Bundle
+        env:
+          DATABRICKS_HOST: ${{ github.base_ref == 'main' && secrets.PROD_DATABRICKS_HOST || secrets.DEV_DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ github.base_ref == 'main' && secrets.PROD_DATABRICKS_TOKEN || secrets.DEV_DATABRICKS_TOKEN }}
+        run: |
+          set -e
+          
+          TARGET=${{ github.base_ref == 'main' && 'prod' || 'dev' }}
+          
+          echo "🔍 Validating bundle for $TARGET..."
+          databricks bundle validate --target $TARGET
+          
+          echo "✅ Bundle validation passed!"
+      
+      - name: Summary
+        if: failure()
+        run: |
+          echo "❌ PR validation failed - THIS PR CANNOT BE MERGED"
+          echo ""
+          echo "Next steps:"
+          echo "1. Check error logs above"
+          echo "2. Fix issues in your feature branch"
+          echo "3. Push fixes to this PR"
+          echo "4. Validation will run automatically again"
