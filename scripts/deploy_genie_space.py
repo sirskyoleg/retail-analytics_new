@@ -38,10 +38,11 @@ def normalize_workspace_url(workspace_url: str) -> str:
 
 
 class GenieSpaceDeployer:
-    def __init__(self, workspace_url: str, token: str, catalog_name: str):
+    def __init__(self, workspace_url: str, token: str, catalog_name: str, warehouse_id: str = None):
         self.workspace_url = normalize_workspace_url(workspace_url)
         self.token = token.strip()
         self.catalog_name = catalog_name
+        self.warehouse_id = (warehouse_id or os.environ.get('WAREHOUSE_ID') or '').strip()
         self.headers = {
             "Authorization": f"Bearer {self.token}",
             "Content-Type": "application/json"
@@ -76,10 +77,14 @@ class GenieSpaceDeployer:
         space_config = config['space']
         tables = self.update_table_names(config['tables'])
         
+        if not self.warehouse_id:
+            raise ValueError("WAREHOUSE_ID is required to create a Genie Space.")
+
         payload = {
             "display_name": space_config['display_name'],
             "description": space_config['description'],
-            "table_identifiers": tables
+            "table_identifiers": tables,
+            "warehouse_id": self.warehouse_id
         }
         
         print(f"Creating Genie Space: {space_config['display_name']}")
@@ -176,6 +181,7 @@ def main():
     # Get configuration from environment
     workspace_url = os.environ.get('DATABRICKS_HOST')
     token = os.environ.get('DATABRICKS_TOKEN')
+    warehouse_id = os.environ.get('WAREHOUSE_ID') or '5b8e2cea7c9d6bbf'
     catalog_name = os.environ.get('CATALOG_NAME', 'retail_ai3')
 
     if not workspace_url or not token:
@@ -204,7 +210,7 @@ def main():
         sys.exit(1)
 
     # Deploy
-    deployer = GenieSpaceDeployer(workspace_url, token, catalog_name)
+    deployer = GenieSpaceDeployer(workspace_url, token, catalog_name, warehouse_id)
     deployer.deploy(config_path)
 
 

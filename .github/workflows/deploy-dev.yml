@@ -58,6 +58,7 @@ jobs:
         env:
           DATABRICKS_HOST: ${{ secrets.DEV_DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.DEV_DATABRICKS_TOKEN }}
+          WAREHOUSE_ID: ${{ secrets.DEV_WAREHOUSE_ID || '5b8e2cea7c9d6bbf' }}
           CATALOG_NAME: retail_ai3_dev
         run: |
           echo "========================================"
