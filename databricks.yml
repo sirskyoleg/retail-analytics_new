@@ -3,6 +3,12 @@ bundle:
 include:
 - resources/*.yml
 variables:
+  catalog:
+    description: Unity Catalog name
+
+  schema:
+    description: Target schema
+
   warehouse_id:
     description: SQL Warehouse ID
 workspace:
