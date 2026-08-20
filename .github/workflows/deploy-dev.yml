@@ -23,7 +23,23 @@ jobs:
       - name: Install dependencies
         run: |
           pip install requests databricks-cli
-      
+      - name: Test Databricks authentication
+        env:
+            DATABRICKS_HOST: ${{ secrets.DEV_DATABRICKS_HOST }}
+            DATABRICKS_TOKEN: ${{ secrets.DEV_DATABRICKS_TOKEN }}
+        run: |
+            echo "Host: ${DATABRICKS_HOST}"
+            echo "Token exists: ${DATABRICKS_TOKEN:+YES}"
+            echo "Token length: ${#DATABRICKS_TOKEN}"
+
+            curl -sS \
+              -o response.json \
+              -w "HTTP status: %{http_code}\n" \
+              -H "Authorization: Bearer ${DATABRICKS_TOKEN}" \
+              "${DATABRICKS_HOST}/api/2.0/current-user"
+
+            echo "Response:"
+            cat response.json
       - name: Deploy Genie Space to Development
         env:
           DATABRICKS_HOST: ${{ secrets.DEV_DATABRICKS_HOST }}
@@ -42,6 +58,7 @@ jobs:
           echo "Token exists: ${DATABRICKS_TOKEN:+YES}"
           echo "Token length: ${#DATABRICKS_TOKEN}"
           python3 scripts/deploy_genie_space.py 
+      
       - name: Deployment Summary
         run: |
           echo "✅ Successfully deployed to development!"
