@@ -2,6 +2,9 @@ bundle:
   name: retail-analytics
 include:
 - resources/*.yml
+variables:
+  warehouse_id:
+    description: SQL Warehouse ID
 workspace:
   host: ${var.databricks_host}
 targets:
