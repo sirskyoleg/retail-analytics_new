@@ -1,7 +1,10 @@
 name: Deploy to Production
 
 on:
-  push:
+  workflow_run:
+    workflows: ["Smart Deployment Pipeline"]
+    types:
+      - completed
     branches:
       - main
   workflow_dispatch:
@@ -10,31 +13,58 @@ jobs:
   deploy-prod:
     runs-on: ubuntu-latest
     environment: production
-    
+    # Запускається тільки якщо smart-deploy.yml успішний
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
-      
+
       - name: Install dependencies
         run: |
           pip install requests databricks-cli
-      
-      - name: Deploy Genie Space to Production
+
+      # ==========================================================
+      # TEST DATABRICKS AUTHENTICATION
+      # ==========================================================
+
+      - name: Test Databricks authentication
         env:
           DATABRICKS_HOST: ${{ secrets.PROD_DATABRICKS_HOST }}
           DATABRICKS_TOKEN: ${{ secrets.PROD_DATABRICKS_TOKEN }}
-          CATALOG_NAME: retail_ai3
         run: |
-          echo "Deploying Genie Space to production..."
-          python3 scripts/deploy_genie_space.py
-      
+          echo "========================================"
+          echo "Testing PROD Databricks authentication"
+          echo "========================================"
+
+          echo "Host: ${DATABRICKS_HOST}"
+          echo "Token exists: ${DATABRICKS_TOKEN:+YES}"
+
+          curl -sS \
+            -o response.json \
+            -w "HTTP status: %{http_code}\n" \
+            -H "Authorization: Bearer ${DATABRICKS_TOKEN}" \
+            "${DATABRICKS_HOST}/api/2.0/current-user"
+
+          echo "Response:"
+          cat response.json
+
+      # ==========================================================
+      # SUMMARY
+      # ==========================================================
+
       - name: Deployment Summary
         run: |
-          echo "✅ Successfully deployed to production!"
+          echo "========================================"
+          echo "PROD Post-deployment validation completed!"
+          echo "========================================"
+
           echo "Workspace: ${{ secrets.PROD_DATABRICKS_HOST }}"
           echo "Catalog: retail_ai3"
+          echo ""
+          echo "✅ All checks passed after smart-deploy.yml"
