@@ -6,18 +6,44 @@ Reads configuration from genie/space_config.json
 
 import json
 import os
+import re
 import sys
+from urllib.parse import urlparse
+
 import requests
 from typing import Dict, List, Any
 
 
+def normalize_workspace_url(workspace_url: str) -> str:
+    """Normalize a Databricks workspace URL and reject API endpoints."""
+    if not workspace_url:
+        raise ValueError("DATABRICKS_HOST is empty")
+
+    url = workspace_url.strip().rstrip('/')
+    parsed = urlparse(url)
+
+    if parsed.scheme not in {'http', 'https'} or not parsed.netloc:
+        raise ValueError(f"DATABRICKS_HOST must be a valid Databricks workspace URL: {workspace_url}")
+
+    if parsed.path and parsed.path not in ('', '/'):
+        raise ValueError(
+            "DATABRICKS_HOST must be the workspace base URL, not an API URL. "
+            f"Received: {workspace_url}"
+        )
+
+    if not re.search(r'\.cloud\.databricks\.com$|\.azuredatabricks\.net$', parsed.netloc):
+        raise ValueError(f"DATABRICKS_HOST does not look like a Databricks workspace URL: {workspace_url}")
+
+    return url
+
+
 class GenieSpaceDeployer:
     def __init__(self, workspace_url: str, token: str, catalog_name: str):
-        self.workspace_url = workspace_url.rstrip('/')
-        self.token = token
+        self.workspace_url = normalize_workspace_url(workspace_url)
+        self.token = token.strip()
         self.catalog_name = catalog_name
         self.headers = {
-            "Authorization": f"Bearer {token}",
+            "Authorization": f"Bearer {self.token}",
             "Content-Type": "application/json"
         }
     
@@ -151,22 +177,32 @@ def main():
     workspace_url = os.environ.get('DATABRICKS_HOST')
     token = os.environ.get('DATABRICKS_TOKEN')
     catalog_name = os.environ.get('CATALOG_NAME', 'retail_ai3')
-    
+
     if not workspace_url or not token:
         print("Error: DATABRICKS_HOST and DATABRICKS_TOKEN must be set")
         sys.exit(1)
-    
+
+    try:
+        workspace_url = normalize_workspace_url(workspace_url)
+    except ValueError as exc:
+        print(f"Error: {exc}")
+        sys.exit(1)
+
+    if not token.startswith(('dapi', 'dap')):
+        print("Error: DATABRICKS_TOKEN appears invalid. Databricks personal access tokens usually start with 'dapi'.")
+        sys.exit(1)
+
     # Path to config file
     config_path = os.path.join(
         os.path.dirname(os.path.dirname(__file__)),
         'genie',
         'space_config.json'
     )
-    
+
     if not os.path.exists(config_path):
         print(f"Error: Configuration file not found: {config_path}")
         sys.exit(1)
-    
+
     # Deploy
     deployer = GenieSpaceDeployer(workspace_url, token, catalog_name)
     deployer.deploy(config_path)
