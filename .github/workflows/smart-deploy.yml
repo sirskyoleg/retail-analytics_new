@@ -24,18 +24,34 @@ jobs:
       
       - name: Deploy with DABs
         run: |
+          set -e
+          
           TARGET=${{ github.ref == 'refs/heads/main' && 'prod' || 'dev' }}
+          
+          echo "🚀 Starting deployment to $TARGET..."
           databricks bundle deploy --target $TARGET
+          
+          echo "📦 Running create_uc_tables job..."
           databricks bundle run create_uc_tables --target $TARGET
+          
+          echo "✅ Deployment successful!"
       
-      - name: Summary
+      - name: Failure Summary
+        if: failure()
         run: |
-          echo "✅ Deployed to: ${{ github.ref == 'refs/heads/main' && 'PROD' || 'DEV' }}"
-          echo "📦 What was deployed:"
-          echo "  - UC Tables (via schema definitions)"
-          echo "  - Delta Live Tables Pipelines"
-          echo "  - Scheduled Jobs"
-          echo "  - Notebooks"
+          echo "❌ DEPLOYMENT FAILED!"
           echo ""
-          echo "⚠️  Manual step (one-time):"
-          echo "  Create Genie Space using PROD_SPACE_CREATION_CHECKLIST.md"
+          echo "Environment: ${{ github.ref == 'refs/heads/main' && 'PROD' || 'DEV' }}"
+          echo ""
+          echo "The deployment failed - check logs above for details."
+          echo "Fix the error in a new commit and push to trigger redeployment."
+      
+      - name: Success Summary
+        if: success()
+        run: |
+          echo "✅ Successfully deployed to: ${{ github.ref == 'refs/heads/main' && 'PROD' || 'DEV' }}"
+          echo "📦 Deployed resources:"
+          echo "  - UC Tables"
+          echo "  - Delta Live Tables Pipelines"
+          echo "  - Jobs"
+          echo "  - Notebooks"
