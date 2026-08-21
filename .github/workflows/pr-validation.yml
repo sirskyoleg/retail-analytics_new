@@ -25,6 +25,11 @@ jobs:
         run: |
           set -e
           
+          echo "🔍 Environment Variables:"
+          echo "DATABRICKS_HOST: $DATABRICKS_HOST"
+          echo "DATABRICKS_TOKEN: ${DATABRICKS_TOKEN:0:10}..."
+          echo ""
+          
           TARGET=${{ github.base_ref == 'main' && 'prod' || 'dev' }}
           
           echo "🔍 Validating bundle for $TARGET..."
