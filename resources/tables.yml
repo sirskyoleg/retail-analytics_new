@@ -3,7 +3,18 @@ resources:
     create_uc_tables:
       name: Create UC Tables - ${bundle.target}
       tasks:
+      - task_key: create_schema
+        sql_task:
+          warehouse_id: ${var.warehouse_id}
+          file:
+            path: ../src/schemas/create_schema.sql
+          parameters:
+            catalog: ${var.catalog}
+            schema: ${var.schema}
+        timeout_seconds: 300
       - task_key: create_customer_service_summary
+        depends_on:
+        - task_key: create_schema
         sql_task:
           warehouse_id: ${var.warehouse_id}
           file:
