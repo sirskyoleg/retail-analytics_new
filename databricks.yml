@@ -26,10 +26,12 @@ targets:
       warehouse_id: 5b8e2cea7c9d6bbf
   prod:
     mode: production
+    run_as:
+      user_name: sirskam123@gmail.com
     workspace:
       host: https://dbc-91a4ccf2-831f.cloud.databricks.com
       root_path: /Workspace/.bundle/${bundle.name}/${bundle.target}
     variables:
       catalog: retail_ai3
       schema: gold
-      warehouse_id: ${var.prod_warehouse_id}
+      warehouse_id: f9cdc9ff1f8d6398
