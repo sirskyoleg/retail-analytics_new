@@ -8,12 +8,18 @@ resources:
           warehouse_id: ${var.warehouse_id}
           file:
             path: ../src/schemas/customer_service_summary.sql
+          parameters:
+            catalog: ${var.catalog}
+            schema: ${var.schema}
         timeout_seconds: 300
       - task_key: create_product_wise_revenue
         sql_task:
           warehouse_id: ${var.warehouse_id}
           file:
             path: ../src/schemas/product_wise_revenue.sql
+          parameters:
+            catalog: ${var.catalog}
+            schema: ${var.schema}
         depends_on:
         - task_key: create_customer_service_summary
         timeout_seconds: 300
@@ -22,6 +28,9 @@ resources:
           warehouse_id: ${var.warehouse_id}
           file:
             path: ../src/schemas/top_customers.sql
+          parameters:
+            catalog: ${var.catalog}
+            schema: ${var.schema}
         depends_on:
         - task_key: create_product_wise_revenue
         timeout_seconds: 300

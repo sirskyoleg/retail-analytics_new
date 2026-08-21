@@ -1,7 +1,10 @@
 name: Deploy to Development
 
 on:
-  push:
+  workflow_run:
+    workflows: ["Smart Deployment Pipeline"]
+    types:
+      - completed
     branches:
       - retail-analytics_new_dev
   workflow_dispatch:
@@ -10,6 +13,8 @@ jobs:
   deploy-dev:
     runs-on: ubuntu-latest
     environment: development
+    # Запускається тільки якщо smart-deploy.yml успішний
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
 
     steps:
       - name: Checkout code
@@ -39,7 +44,6 @@ jobs:
 
           echo "Host: ${DATABRICKS_HOST}"
           echo "Token exists: ${DATABRICKS_TOKEN:+YES}"
-          echo "Token length: ${#DATABRICKS_TOKEN}"
 
           curl -sS \
             -o response.json \
@@ -57,11 +61,10 @@ jobs:
       - name: Deployment Summary
         run: |
           echo "========================================"
-          echo "Deployment completed successfully!"
+          echo "Post-deployment validation completed!"
           echo "========================================"
 
           echo "Workspace: ${{ secrets.DEV_DATABRICKS_HOST }}"
           echo "Catalog: retail_ai3_dev"
           echo ""
-          echo "Note: Genie Space creation is not supported in Free edition."
-          echo "Create the space manually in the Databricks UI if needed."
+          echo "✅ All checks passed after smart-deploy.yml"

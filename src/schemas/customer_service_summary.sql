@@ -1,7 +1,7 @@
 -- Customer Service Summary Table
 -- Aggregated customer service issues by category
 
-CREATE TABLE IF NOT EXISTS ${catalog}.${schema}.customer_service_summary (
+CREATE TABLE IF NOT EXISTS IDENTIFIER(:catalog || '.' || :schema || '.customer_service_summary') (
   issue_category STRING COMMENT 'Category of customer service issue',
   total_records BIGINT COMMENT 'Total number of records in this category'
 )
