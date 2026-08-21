@@ -30,7 +30,7 @@ targets:
       user_name: sirskam123@gmail.com
     workspace:
       host: https://dbc-91a4ccf2-831f.cloud.databricks.com
-      root_path:  ~/.bundle/${bundle.name}/${bundle.target}
+      root_path: ~/.bundle/${bundle.name}/${bundle.target}
     variables:
       catalog: retail_ai3
       schema: gold
