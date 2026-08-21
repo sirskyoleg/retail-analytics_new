@@ -27,6 +27,14 @@ jobs:
           
           TARGET=${{ github.base_ref == 'main' && 'prod' || 'dev' }}
           
+          echo "🔍 Debug Information:"
+          echo "Target environment: $TARGET"
+          echo "Base ref (target branch): ${{ github.base_ref }}"
+          echo "Using secrets: ${{ github.base_ref == 'main' && 'PROD_*' || 'DEV_*' }}"
+          echo "DATABRICKS_HOST length: ${#DATABRICKS_HOST}"
+          echo "DATABRICKS_TOKEN length: ${#DATABRICKS_TOKEN}"
+          echo ""
+          
           echo "🔍 Validating bundle for $TARGET..."
           databricks bundle validate --target $TARGET
           
