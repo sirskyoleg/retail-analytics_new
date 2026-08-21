@@ -9,7 +9,11 @@ COMMENT 'Gold layer schema for retail analytics';
 -- Note: GRANT statements don't support IDENTIFIER() or parameter concatenation
 -- These will need to be run separately with actual values, or use catalog-level grants
 
+EXECUTE IMMEDIATE
+  'GRANT USE CATALOG ON CATALOG `' || :catalog || '` TO `test`';
 
-GRANT USE CATALOG ON CATALOG IDENTIFIER(CONCAT(:catalog)) TO `test`;
-GRANT SELECT ON SCHEMA IDENTIFIER(CONCAT(:catalog, '.', :schema)) TO `test`;
-GRANT USE SCHEMA ON SCHEMA IDENTIFIER(CONCAT(:catalog, '.', :schema)) TO `test`;
+EXECUTE IMMEDIATE
+  'GRANT USE SCHEMA ON SCHEMA `' || :catalog || '`.`' || :schema || '` TO `test`';
+
+EXECUTE IMMEDIATE
+  'GRANT SELECT ON SCHEMA `' || :catalog || '`.`' || :schema || '` TO `test`';
