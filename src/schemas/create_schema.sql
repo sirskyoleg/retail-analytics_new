@@ -17,3 +17,5 @@ EXECUTE IMMEDIATE
 
 EXECUTE IMMEDIATE
   'GRANT SELECT ON SCHEMA `' || :catalog || '`.`' || :schema || '` TO `test`';
+
+  
